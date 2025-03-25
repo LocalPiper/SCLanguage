@@ -33,6 +33,7 @@ factor:
 
 term:
       NUMBER { $$ = atoi(yytext); }
+      | MINUS term { $$ = -$2; }
 %%
 
 int main() {
