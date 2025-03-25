@@ -11,7 +11,7 @@ void yyerror(const char* s) {
 extern char* yytext;
 %}
 
-%token NUMBER PLUS MINUS STAR SLASH EOL
+%token NUMBER PLUS MINUS STAR SLASH OP CP EOL
 
 %%
 
@@ -34,6 +34,7 @@ factor:
 term:
       NUMBER { $$ = atoi(yytext); }
       | MINUS term { $$ = -$2; }
+      | OP expression CP { $$ = $2; }
 %%
 
 int main() {

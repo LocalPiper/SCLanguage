@@ -9,6 +9,8 @@
 "-"         { return MINUS; }
 "*"         { return STAR; }
 "/"         { return SLASH; }
+"("         { return OP; }
+")"         { return CP; }
 \n          { return EOL; }
 [ \t]       {}
 .           { return 0; }
