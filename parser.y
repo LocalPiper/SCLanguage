@@ -1,5 +1,6 @@
 %{
 #include <iostream>
+#include <unordered_map>
 using namespace std;
 
 int yylex();
@@ -9,15 +10,35 @@ void yyerror(const char* s) {
 }
 
 extern char* yytext;
-%}
 
-%token NUMBER PLUS MINUS STAR SLASH OP CP EOL
+unordered_map<string, int> variables;
+
+%}
+%union {
+  int num;
+  char* str;
+}
+
+%token <num> NUMBER
+%token <str> IDENTIFIER
+%token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN
+%type <num> program statements statement expression factor term
 
 %%
 
+program:
+       statements
+       ;
+
 statements:
-          | statements expression EOL { cout << "= " << $2 << endl; }
+          statements statement
+          | statement
           ;
+
+statement:
+         PRINT expression EOL { cout << "Milord proclaimeth: " << $2 << "!" << endl; }
+         | IDENTIFIER ASSIGN expression EOL { variables[$1] = $3; }
+         | expression EOL { }
 
 expression:
     expression PLUS factor { $$ = $1 + $3; }
@@ -33,6 +54,7 @@ factor:
 
 term:
       NUMBER { $$ = atoi(yytext); }
+      | IDENTIFIER { $$ = variables[$1]; }
       | MINUS term { $$ = -$2; }
       | OP expression CP { $$ = $2; }
 %%
