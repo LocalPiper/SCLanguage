@@ -7,6 +7,7 @@
 [0-9]+      { return NUMBER; }
 "+"         { return PLUS; }
 "-"         { return MINUS; }
+[ \t\r]     {}
 "\n"        { return EOL; }
 
 %%

@@ -15,7 +15,12 @@ extern char* yytext;
 
 %%
 
-start:
+program:
+    program statement {}
+    |
+    ;
+
+statement:
     expression EOL { cout << "Result: " << $1 << endl; }
     ;
 
