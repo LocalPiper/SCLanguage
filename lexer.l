@@ -7,9 +7,11 @@
 [0-9]+      { return NUMBER; }
 "+"         { return PLUS; }
 "-"         { return MINUS; }
-[ \t\r]     {}
-"\n"        { return EOL; }
-
+"*"         { return STAR; }
+"/"         { return SLASH; }
+\n          { return EOL; }
+[ \t]       {}
+.           { return 0; }
 %%
 
 int yywrap() {

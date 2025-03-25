@@ -11,29 +11,28 @@ void yyerror(const char* s) {
 extern char* yytext;
 %}
 
-%token NUMBER PLUS MINUS EOL
+%token NUMBER PLUS MINUS STAR SLASH EOL
 
 %%
 
-program:
-    program statement {}
-    |
-    ;
-
-statement:
-    expression EOL { cout << "Result: " << $1 << endl; }
-    ;
+statements:
+          | statements expression EOL { cout << "= " << $2 << endl; }
+          ;
 
 expression:
-    expression PLUS term { $$ = $1 + $3; }
-    | expression MINUS term { $$ = $1 - $3; }
+    expression PLUS factor { $$ = $1 + $3; }
+    | expression MINUS factor { $$ = $1 - $3; }
+    | factor { $$ = $1; }
+    ;
+
+factor:
+    factor STAR term { $$ = $1 * $3; }
+    | factor SLASH term { $$ = $1 / $3; }
     | term { $$ = $1; }
     ;
 
 term:
-    NUMBER { $$ = atoi(yytext); }
-    ;
-
+      NUMBER { $$ = atoi(yytext); }
 %%
 
 int main() {
