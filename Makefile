@@ -3,8 +3,8 @@ LEX = flex
 BISON = bison
 CFLAGS = -std=c++11
 
-all: lexer.tab.cpp parser.tab.cpp
-	$(CC) $(CFLAGS) lexer.tab.cpp parser.tab.cpp -o calc
+all: lexer.tab.cpp parser.tab.cpp ast.cpp
+	$(CC) $(CFLAGS) lexer.tab.cpp parser.tab.cpp ast.cpp -o calc
 
 lexer.tab.cpp: lexer.l
 	$(LEX) -o lexer.tab.cpp lexer.l

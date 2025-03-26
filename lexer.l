@@ -1,4 +1,5 @@
 %{
+#include "ast.hpp"
 #include "parser.tab.hpp"
 %}
 
