@@ -22,7 +22,7 @@ unordered_map<string, int> variables;
 %token <num> NUMBER
 %token <str> IDENTIFIER
 %token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN
-%type <num> program statements statement expression factor term
+%type <num> program statements statement assignment expression factor term
 
 %%
 
@@ -31,14 +31,18 @@ program:
        ;
 
 statements:
-          statements statement
+          statement statements
           | statement
           ;
 
 statement:
-         PRINT expression EOL { cout << "Milord proclaimeth: " << $2 << "!" << endl; }
-         | IDENTIFIER ASSIGN expression EOL { variables[$1] = $3; }
-         | expression EOL { }
+         PRINT assignment EOL { cout << "Milord proclaimeth: " << $2 << "!" << endl; }
+         | assignment EOL {}
+         | expression EOL {}
+
+assignment:
+          IDENTIFIER ASSIGN assignment { variables[$1] = $3; $$ = $3; }
+          | expression {}
 
 expression:
     expression PLUS factor { $$ = $1 + $3; }
@@ -56,7 +60,7 @@ term:
       NUMBER { $$ = atoi(yytext); }
       | IDENTIFIER { $$ = variables[$1]; }
       | MINUS term { $$ = -$2; }
-      | OP expression CP { $$ = $2; }
+      | OP assignment CP { $$ = $2; }
 %%
 
 int main() {
