@@ -83,13 +83,20 @@ Value BinaryOpNode::evaluate() const {
       return l && r;
   }
 
-  if (op == "+" && (holds_alternative<string>(leftVal) ||
-                    holds_alternative<string>(rightVal))) {
+  if ((op == "+" || op == "==" || op == "!=") &&
+      (holds_alternative<string>(leftVal) ||
+       holds_alternative<string>(rightVal))) {
     string l = holds_alternative<int>(leftVal) ? to_string(get<int>(leftVal))
                                                : get<string>(leftVal);
     string r = holds_alternative<int>(rightVal) ? to_string(get<int>(rightVal))
                                                 : get<string>(rightVal);
-    return l + r;
+    if (op == "+") {
+      return l + r;
+    } else if (op == "==") {
+      return l == r;
+    } else if (op == "!=") {
+      return l != r;
+    }
   }
 
   cerr << "Error: Invalid operation for the given types." << endl;
