@@ -1,5 +1,5 @@
-a proclaim 5
-b proclaim 3
-c proclaim a forge 2
-d proclaim c deplete b produce 4
+henceforth a proclaim 5
+henceforth b proclaim 3
+henceforth c proclaim a forge 2
+henceforth d proclaim c deplete b produce 4
 declare d

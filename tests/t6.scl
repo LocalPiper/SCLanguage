@@ -1,6 +1,6 @@
-x proclaim loyal
-y proclaim traitor
-z proclaim x allied y
-w proclaim x or y
+henceforth x proclaim loyal
+henceforth y proclaim traitor
+henceforth z proclaim x allied y
+henceforth w proclaim x or y
 declare z
 declare w

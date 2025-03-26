@@ -1,5 +1,5 @@
-a proclaim 7
-b proclaim 4
-c proclaim 2
-d proclaim gather a produce b release forge c
+henceforth a proclaim 7
+henceforth b proclaim 4
+henceforth c proclaim 2
+henceforth d proclaim gather a produce b release forge c
 declare d

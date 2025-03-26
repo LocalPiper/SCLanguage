@@ -1,9 +1,9 @@
-x proclaim 7
-y proclaim 10
-a proclaim x lesser y
-b proclaim x greater y
-c proclaim x claimeth y
-d proclaim x reject y
+henceforth x proclaim 7
+henceforth y proclaim 10
+henceforth a proclaim x lesser y
+henceforth b proclaim x greater y
+henceforth c proclaim x claimeth y
+henceforth d proclaim x reject y
 declare a
 declare b
 declare c
