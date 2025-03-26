@@ -24,7 +24,7 @@ unordered_map<string, int> variables;
 %token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN
 %token EQ LT GT LEQ GEQ NEQ AND OR NOT TRUE FALSE
 %type <num> program statements statement expression_statement print_statement
-%type <num> expression assignment equalty comparison term factor unary primary
+%type <num> expression assignment logical_or logical_and equalty comparison term factor unary primary
 
 
 
@@ -57,8 +57,18 @@ expression:
 
 assignment:
           IDENTIFIER ASSIGN assignment { variables[$1] = $3; $$ = $3; }
-          | equalty { $$ = $1; }
+          | logical_or { $$ = $1; }
           ;
+
+logical_or:
+          logical_and OR logical_and { $$ = $1 || $3; }
+          | logical_and { $$ = $1; }
+          ;
+
+logical_and:
+           equalty AND equalty { $$ = $1 && $3; }
+           | equalty { $$ = $1; }
+           ;
 
 equalty:
        comparison EQ comparison { $$ = $1 == $3; }
@@ -75,14 +85,14 @@ comparison:
           ;
 
 term:
-    factor PLUS factor { $$ = $1 + $3; }
-    | factor MINUS factor { $$ = $1 - $3; }
+    term PLUS factor { $$ = $1 + $3; }
+    | term MINUS factor { $$ = $1 - $3; }
     | factor { $$ = $1; }
     ;
 
 factor:
-      unary STAR unary { $$ = $1 * $3; }
-      | unary SLASH unary { $$ = $1 / $3; }
+      factor STAR unary { $$ = $1 * $3; }
+      | factor SLASH unary { $$ = $1 / $3; }
       | unary { $$ = $1; }
       ;
 

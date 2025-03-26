@@ -1,0 +1,6 @@
+a proclaim 6
+b proclaim 3
+c proclaim a forge b
+d proclaim a divide b
+declare c
+declare d

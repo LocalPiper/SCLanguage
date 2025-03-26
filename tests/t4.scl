@@ -1,0 +1,4 @@
+x proclaim 20
+y proclaim 8
+z proclaim x deplete y
+declare z

@@ -12,6 +12,14 @@ lexer.tab.cpp: lexer.l
 parser.tab.cpp: parser.y
 	$(BISON) -Wcounterexamples -d -o parser.tab.cpp parser.y
 
+run-tests: all
+	@echo "Running tests...\n"
+	@for test in tests/t*.scl; do \
+		echo "Running $$test..."; \
+		./calc < $$test; \
+		echo " "; \
+	done
+
 clean:
 	rm -f lexer.tab.cpp parser.tab.cpp parser.tab.hpp calc
 

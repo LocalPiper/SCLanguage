@@ -1,0 +1,4 @@
+a proclaim 10
+b proclaim 4
+c proclaim a produce b
+declare c

@@ -1,0 +1,6 @@
+x proclaim loyal
+y proclaim traitor
+z proclaim x allied y
+w proclaim x or y
+declare z
+declare w

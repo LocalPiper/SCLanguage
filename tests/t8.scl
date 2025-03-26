@@ -1,0 +1,10 @@
+x proclaim 7
+y proclaim 10
+a proclaim x lesser y
+b proclaim x greater y
+c proclaim x claimeth y
+d proclaim x reject y
+declare a
+declare b
+declare c
+declare d
