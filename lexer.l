@@ -25,6 +25,8 @@
 "banish"       { return CB; }
 "prithee"      { return IF; }
 "elsewise"     { return ELSE; }
+"whilst"       { return WHILE; }
+"henceforth"   { return VAR; }
 "loyal"        { return TRUE; }
 "traitor"      { return FALSE; }
 "declare"      { return PRINT; }

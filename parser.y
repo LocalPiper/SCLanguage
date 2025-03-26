@@ -26,12 +26,12 @@ ASTNode* root = nullptr;
 
 %token <num> NUMBER
 %token <str> IDENTIFIER
-%token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN
+%token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN VAR
 %token EQ LT GT LEQ GEQ NEQ AND OR NOT TRUE FALSE
-%token IF ELSE OB CB
+%token IF ELSE OB CB WHILE
 %type <node> program statements statement expression_statement print_statement
 %type <node> expression assignment logical_or logical_and equalty comparison term factor unary primary
-%type <node> if_statement block
+%type <node> if_statement block while_statement
 
 %nonassoc IF
 %nonassoc ELSE
@@ -57,6 +57,7 @@ statement:
          print_statement EOL { $$ = $1; }
          | expression_statement EOL { $$ = $1; }
          | if_statement { $$ = $1; }
+         | while_statement { $$ = $1; }
          | block { $$ = $1; }
          ;
 
@@ -78,12 +79,16 @@ if_statement:
             | IF OP expression CP block { $$ = new IfNode($3, $5, nullptr); }
             ;
 
+while_statement:
+               WHILE OP expression CP block { $$ = new WhileNode($3, $5); }
+
 expression:
           assignment { $$ = $1; }
           ;
 
 assignment:
           IDENTIFIER ASSIGN assignment { $$ = new AssignmentNode($1, $3); }
+          | VAR IDENTIFIER ASSIGN assignment { $$ = new CreationNode($2, $4); }
           | logical_or { $$ = $1; }
           ;
 

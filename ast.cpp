@@ -23,7 +23,17 @@ int getVar(const string &name) {
   return 0;
 }
 
-void setVar(const string &name, int value) { scopes.back()[name] = value; }
+void createVar(const string &name, int value) { scopes.back()[name] = value; }
+
+void setVar(const string &name, int value) {
+  for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
+    if (it->count(name)) {
+      (*it)[name] = value;
+      return;
+    }
+  }
+  cerr << "Error: Undefined variable " << name << endl;
+}
 
 int VariableNode::evaluate() const { return getVar(name); }
 
@@ -84,6 +94,12 @@ int AssignmentNode::evaluate() const {
   return result;
 }
 
+int CreationNode::evaluate() const {
+  int result = expression->evaluate();
+  createVar(name, result);
+  return result;
+}
+
 int IfNode::evaluate() const {
   if (condition->evaluate()) {
     return thenBlock->evaluate();
@@ -101,4 +117,11 @@ int BlockNode::evaluate() const {
   }
   exitScope();
   return result;
+}
+
+int WhileNode::evaluate() const {
+  while (condition->evaluate()) {
+    block->evaluate();
+  }
+  return 0;
 }

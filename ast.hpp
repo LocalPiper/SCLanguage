@@ -63,6 +63,14 @@ public:
   int evaluate() const override;
 };
 
+class CreationNode : public ASTNode {
+public:
+  string name;
+  ASTNode *expression;
+  CreationNode(const string &n, ASTNode *expr) : name(n), expression(expr) {}
+  int evaluate() const override;
+};
+
 class IfNode : public ASTNode {
 public:
   ASTNode *condition;
@@ -77,6 +85,14 @@ class BlockNode : public ASTNode {
 public:
   vector<ASTNode *> statements;
   void addStatement(ASTNode *stmt) { statements.push_back(stmt); }
+  int evaluate() const override;
+};
+
+class WhileNode : public ASTNode {
+public:
+  ASTNode *condition;
+  ASTNode *block;
+  WhileNode(ASTNode *cond, ASTNode *blk) : condition(cond), block(blk) {}
   int evaluate() const override;
 };
 
