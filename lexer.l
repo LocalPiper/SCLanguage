@@ -20,6 +20,10 @@
 "deny"         { return NOT; }
 "gather"       { return OP; }
 "release"      { return CP; }
+"summon"       { return OB; }
+"banish"       { return CB; }
+"prithee"      { return IF; }
+"elsewise"     { return ELSE; }
 "loyal"        { return TRUE; }
 "traitor"      { return FALSE; }
 "declare"      { return PRINT; }
