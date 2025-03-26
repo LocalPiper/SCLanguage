@@ -25,7 +25,7 @@ ASTNode* root = nullptr;
 }
 
 %token <num> NUMBER
-%token <str> IDENTIFIER
+%token <str> IDENTIFIER STRING
 %token PLUS MINUS STAR SLASH OP CP EOL PRINT ASSIGN VAR
 %token EQ LT GT LEQ GEQ NEQ AND OR NOT TRUE FALSE
 %token IF ELSE OB CB WHILE
@@ -139,6 +139,7 @@ primary:
        | TRUE { $$ = new NumberNode(1); }
        | NUMBER { $$ = new NumberNode($1); }
        | IDENTIFIER { $$ = new VariableNode($1); }
+       | STRING { $$ = new StringNode($1); }
        | OP expression CP { $$ = $2; }
        ;
 

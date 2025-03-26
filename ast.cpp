@@ -1,10 +1,14 @@
 #include "ast.hpp"
 #include <iostream>
 #include <unordered_map>
+#include <variant>
 #include <vector>
+
 using namespace std;
 
-vector<unordered_map<string, int>> scopes = {{}};
+using Value = variant<int, string>;
+
+vector<unordered_map<string, Value>> scopes = {{}};
 
 void enterScope() { scopes.push_back({}); }
 
@@ -14,7 +18,7 @@ void exitScope() {
   }
 }
 
-int getVar(const string &name) {
+Value getVar(const string &name) {
   for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
     if (it->count(name))
       return (*it)[name];
@@ -23,9 +27,9 @@ int getVar(const string &name) {
   return 0;
 }
 
-void createVar(const string &name, int value) { scopes.back()[name] = value; }
+void createVar(const string &name, Value value) { scopes.back()[name] = value; }
 
-void setVar(const string &name, int value) {
+void setVar(const string &name, Value value) {
   for (auto it = scopes.rbegin(); it != scopes.rend(); ++it) {
     if (it->count(name)) {
       (*it)[name] = value;
@@ -35,73 +39,101 @@ void setVar(const string &name, int value) {
   cerr << "Error: Undefined variable " << name << endl;
 }
 
-int VariableNode::evaluate() const { return getVar(name); }
+bool isTruthy(const Value &val) {
+  if (holds_alternative<int>(val))
+    return get<int>(val) != 0;
+  if (holds_alternative<string>(val))
+    return !get<string>(val).empty();
+  return false;
+}
 
-int BinaryOpNode::evaluate() const {
-  int leftVal = left->evaluate();
-  int rightVal = right->evaluate();
+Value VariableNode::evaluate() const { return getVar(name); }
 
-  if (op == "+") {
-    return leftVal + rightVal;
-  } else if (op == "-") {
-    return leftVal - rightVal;
-  } else if (op == "*") {
-    return leftVal * rightVal;
-  } else if (op == "/") {
-    return leftVal / rightVal;
-  } else if (op == ">") {
-    return leftVal > rightVal;
-  } else if (op == "<") {
-    return leftVal < rightVal;
-  } else if (op == ">=") {
-    return leftVal >= rightVal;
-  } else if (op == "<=") {
-    return leftVal <= rightVal;
-  } else if (op == "==") {
-    return leftVal == rightVal;
-  } else if (op == "!=") {
-    return leftVal != rightVal;
-  } else if (op == "||") {
-    return leftVal || rightVal;
-  } else if (op == "&&") {
-    return leftVal && rightVal;
+Value BinaryOpNode::evaluate() const {
+  Value leftVal = left->evaluate();
+  Value rightVal = right->evaluate();
+
+  if (holds_alternative<int>(leftVal) && holds_alternative<int>(rightVal)) {
+    int l = get<int>(leftVal);
+    int r = get<int>(rightVal);
+
+    if (op == "+")
+      return l + r;
+    if (op == "-")
+      return l - r;
+    if (op == "*")
+      return l * r;
+    if (op == "/")
+      return r != 0 ? l / r : 0;
+    if (op == ">")
+      return l > r;
+    if (op == "<")
+      return l < r;
+    if (op == ">=")
+      return l >= r;
+    if (op == "<=")
+      return l <= r;
+    if (op == "==")
+      return l == r;
+    if (op == "!=")
+      return l != r;
+    if (op == "||")
+      return l || r;
+    if (op == "&&")
+      return l && r;
   }
-  cerr << "Error: Unknown operator " << op << endl;
+
+  if (op == "+" && (holds_alternative<string>(leftVal) ||
+                    holds_alternative<string>(rightVal))) {
+    string l = holds_alternative<int>(leftVal) ? to_string(get<int>(leftVal))
+                                               : get<string>(leftVal);
+    string r = holds_alternative<int>(rightVal) ? to_string(get<int>(rightVal))
+                                                : get<string>(rightVal);
+    return l + r;
+  }
+
+  cerr << "Error: Invalid operation for the given types." << endl;
   return 0;
 }
 
-int UnaryOpNode::evaluate() const {
-  int result = right->evaluate();
+Value UnaryOpNode::evaluate() const {
+  Value result = right->evaluate();
 
   if (op == "-") {
-    return -result;
+    if (holds_alternative<int>(result))
+      return -get<int>(result);
+    cerr << "Error: Unary '-' can only be applied to integers." << endl;
   } else if (op == "!") {
-    return !result;
+    return !isTruthy(result);
   }
-  cerr << "Error: Unknown operator " << op << endl;
+  cerr << "Error: Unknown or invalid unary operator " << op << endl;
   return 0;
 }
 
-int PrintNode::evaluate() const {
-  int result = expression->evaluate();
-  cout << "Milord proclaimeth: " << result << "!\n";
+Value PrintNode::evaluate() const {
+  Value result = expression->evaluate();
+  if (holds_alternative<int>(result)) {
+    cout << "Milord proclaimeth: " << get<int>(result) << "!\n";
+  } else if (holds_alternative<string>(result)) {
+    cout << "Milord proclaimeth: \"" << get<string>(result) << "\"!\n";
+  }
   return result;
 }
 
-int AssignmentNode::evaluate() const {
-  int result = expression->evaluate();
+Value AssignmentNode::evaluate() const {
+  Value result = expression->evaluate();
   setVar(name, result);
   return result;
 }
 
-int CreationNode::evaluate() const {
-  int result = expression->evaluate();
+Value CreationNode::evaluate() const {
+  Value result = expression->evaluate();
   createVar(name, result);
   return result;
 }
 
-int IfNode::evaluate() const {
-  if (condition->evaluate()) {
+Value IfNode::evaluate() const {
+  if (isTruthy(condition->evaluate())) {
     return thenBlock->evaluate();
   } else if (elseBlock) {
     return elseBlock->evaluate();
@@ -109,9 +141,9 @@ int IfNode::evaluate() const {
   return 0;
 }
 
-int BlockNode::evaluate() const {
+Value BlockNode::evaluate() const {
   enterScope();
-  int result = 0;
+  Value result = 0;
   for (auto &statement : statements) {
     result = statement->evaluate();
   }
@@ -119,8 +151,8 @@ int BlockNode::evaluate() const {
   return result;
 }
 
-int WhileNode::evaluate() const {
-  while (condition->evaluate()) {
+Value WhileNode::evaluate() const {
+  while (isTruthy(condition->evaluate())) {
     block->evaluate();
   }
   return 0;
